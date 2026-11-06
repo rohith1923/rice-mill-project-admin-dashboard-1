@@ -1,0 +1,2578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rice Mill Monitor - Admin Panel</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-main: #f3f5f3;
+      --bg-card: #ffffff;
+      --primary-green: #0d6535;
+      --light-green: #e2f4e8;
+      --medium-green: #b8dfc6;
+      --border-color: #e1e6e1;
+      --text-dark: #111827;
+      --text-muted: #6b7280;
+      --text-secondary: #374151;
+      --red-alert: #d9383a;
+      --red-light: #fef2f2;
+      --yellow-alert: #d97706;
+      --yellow-light: #fffbeb;
+      --blue-info: #2563eb;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-pill: 20px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-dark);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ===================== SIDEBAR ===================== */
+    .sidebar {
+      width: 260px;
+      min-width: 260px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px 16px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      padding: 4px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-green);
+      border-radius: 10px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .brand-text strong {
+      display: block;
+      font-size: 15px;
+      color: var(--text-dark);
+    }
+
+    .brand-text span {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .nav-section-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      margin: 20px 0 8px 14px;
+      font-weight: 700;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      margin-bottom: 2px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-item:hover {
+      background-color: #f0f5f0;
+      color: var(--text-dark);
+    }
+
+    .nav-item.active {
+      background-color: var(--light-green);
+      color: var(--primary-green);
+      font-weight: 600;
+    }
+
+    .nav-item .nav-icon {
+      width: 20px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .sidebar-footer {
+      padding: 16px 8px 0;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--light-green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--primary-green);
+      font-size: 13px;
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-muted);
+      width: 100%;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: var(--red-light);
+      color: var(--red-alert);
+      border-color: var(--red-alert);
+    }
+
+    /* ===================== MAIN ===================== */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .top-bar {
+      height: 60px;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-card);
+      flex-shrink: 0;
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .top-bar-date {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .top-bar-page {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .plant-selector {
+      background: var(--light-green);
+      color: var(--primary-green);
+      padding: 7px 18px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .plant-selector:hover {
+      background: var(--medium-green);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--primary-green);
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--primary-green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .content {
+      padding: 28px 32px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* ===================== CARDS ===================== */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    /* ===================== PAGE HEADER ===================== */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+
+    .page-header h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .page-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ===================== BUTTONS ===================== */
+    .btn-primary {
+      background: var(--primary-green);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #0a5229;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-outline {
+      border: 1px solid var(--border-color);
+      background: transparent;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      color: var(--text-secondary);
+    }
+
+    .btn-outline:hover {
+      background: var(--light-green);
+      border-color: var(--primary-green);
+      color: var(--primary-green);
+    }
+
+    .btn-danger-outline {
+      border: 1px solid var(--red-alert);
+      color: var(--red-alert);
+      background: transparent;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-danger-outline:hover {
+      background: var(--red-light);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px dashed var(--border-color);
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: var(--primary-green);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-ghost:hover {
+      background: var(--light-green);
+      border-color: var(--primary-green);
+    }
+
+    /* ===================== GRIDS ===================== */
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+
+    /* ===================== KPI ===================== */
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .kpi-title {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-top: 6px;
+      color: var(--text-dark);
+    }
+
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .kpi-icon {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    /* ===================== BADGES ===================== */
+    .badge {
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .badge-active { background: var(--light-green); color: var(--primary-green); }
+    .badge-inactive { background: #f3f4f6; color: #9ca3af; }
+    .badge-critical { background: var(--red-light); color: var(--red-alert); }
+    .badge-warning { background: var(--yellow-light); color: var(--yellow-alert); }
+    .badge-online { background: var(--light-green); color: var(--primary-green); }
+    .badge-offline { background: #f3f4f6; color: #9ca3af; }
+
+    /* ===================== TABLE ===================== */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    .data-table th {
+      padding: 12px 16px;
+      color: var(--text-muted);
+      border-bottom: 2px solid var(--border-color);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .data-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr:hover td {
+      background: #fafbfa;
+    }
+
+    .user-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-cell-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--light-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--primary-green);
+      flex-shrink: 0;
+    }
+
+    .user-cell-name { font-weight: 600; font-size: 13px; }
+    .user-cell-email { font-size: 11px; color: var(--text-muted); }
+
+    .actions-cell {
+      display: flex;
+      gap: 8px;
+    }
+
+    .table-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+    }
+
+    .pagination {
+      display: flex;
+      gap: 4px;
+    }
+
+    .pagination button {
+      padding: 4px 10px;
+      border: 1px solid var(--border-color);
+      background: white;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .pagination button.active-page {
+      background: var(--primary-green);
+      color: white;
+      border-color: var(--primary-green);
+    }
+
+    /* ===================== PLANT CARD ===================== */
+    .plant-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .plant-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--medium-green);
+    }
+
+    .plant-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .plant-card-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .plant-card-location {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .plant-card-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .plant-stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .plant-stat-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .plant-stat-value {
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .plant-card-footer {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .view-link {
+      color: var(--primary-green);
+      font-weight: 600;
+      font-size: 13px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .view-link:hover {
+      text-decoration: underline;
+    }
+
+    /* ===================== SEARCH BAR ===================== */
+    .search-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 10px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary-green);
+    }
+
+    .filter-select {
+      padding: 10px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      outline: none;
+      background: white;
+      cursor: pointer;
+      min-width: 140px;
+    }
+
+    .filter-select:focus {
+      border-color: var(--primary-green);
+    }
+
+    /* ===================== MODAL ===================== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      width: 520px;
+      max-width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: #f3f4f6;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: var(--red-light);
+      color: var(--red-alert);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(13,101,53,0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btn-cancel {
+      padding: 10px 20px;
+      border: 1px solid var(--border-color);
+      background: white;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    /* ===================== ALERT ITEMS ===================== */
+    .alert-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+
+    .alert-item:hover {
+      box-shadow: var(--shadow-sm);
+    }
+
+    .alert-item.critical {
+      border-left: 4px solid var(--red-alert);
+      background: var(--red-light);
+    }
+
+    .alert-item.warning {
+      border-left: 4px solid var(--yellow-alert);
+      background: var(--yellow-light);
+    }
+
+    .alert-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .alert-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .alert-icon.critical-icon { background: #fee2e2; }
+    .alert-icon.warning-icon { background: #fef3c7; }
+
+    .alert-title { font-weight: 600; font-size: 13px; }
+    .alert-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    .alert-reading {
+      text-align: right;
+    }
+
+    .alert-reading-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+    .alert-reading-value { font-size: 20px; font-weight: 700; }
+
+    /* ===================== LOG ITEMS ===================== */
+    .log-item {
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-color);
+      align-items: flex-start;
+    }
+
+    .log-item:last-child { border-bottom: none; }
+
+    .log-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary-green);
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .log-content { flex: 1; }
+    .log-action { font-size: 13px; font-weight: 500; }
+    .log-details { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .log-time { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+    /* ===================== MACHINE CONFIG ===================== */
+    .machine-config-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      background: white;
+    }
+
+    .machine-config-item:hover {
+      background: #fafbfa;
+    }
+
+    .machine-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .machine-icon-box {
+      width: 40px;
+      height: 40px;
+      background: var(--light-green);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .machine-name { font-weight: 600; font-size: 13px; }
+    .machine-sensor { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    .machine-meta {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .machine-meta-item {
+      text-align: center;
+    }
+
+    .machine-meta-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+    .machine-meta-value { font-size: 12px; font-weight: 600; margin-top: 2px; }
+
+    /* ===================== TABS ===================== */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-dark);
+    }
+
+    .tab-btn.active {
+      color: var(--primary-green);
+      border-bottom-color: var(--primary-green);
+      font-weight: 600;
+    }
+
+    /* ===================== CONFIRM DIALOG ===================== */
+    .confirm-dialog {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .confirm-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .confirm-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .confirm-message {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .confirm-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .btn-danger {
+      background: var(--red-alert);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* ===================== TOAST ===================== */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 2000;
+    }
+
+    .toast {
+      padding: 14px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-lg);
+      animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s;
+      min-width: 280px;
+    }
+
+    .toast.success {
+      background: var(--primary-green);
+      color: white;
+    }
+
+    .toast.error {
+      background: var(--red-alert);
+      color: white;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    /* Page sections (hidden/shown via JS) */
+    .page-section {
+      display: none;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .grid-3, .grid-2, .grid-4 { grid-template-columns: 1fr; }
+      .content { padding: 16px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <div class="sidebar">
+    <div>
+      <div class="brand">
+        <div class="brand-icon">🌿</div>
+        <div class="brand-text">
+          <strong>Rice Mill Monitor</strong>
+          <span>Energy & motors</span>
+        </div>
+      </div>
+
+      <div class="nav-section-title">Plant Monitor</div>
+      <button class="nav-item" onclick="navigateTo('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+      <button class="nav-item" onclick="navigateTo('process')">
+        <span class="nav-icon">📈</span> Process Analysis
+      </button>
+      <button class="nav-item" onclick="navigateTo('alerts')">
+        <span class="nav-icon">🔔</span> Alerts & Thresholds
+      </button>
+
+      <div class="nav-section-title">Admin Management</div>
+      <button class="nav-item active" data-page="global" onclick="navigateTo('global')">
+        <span class="nav-icon">🌐</span> Global Overview
+      </button>
+      <button class="nav-item" data-page="users" onclick="navigateTo('users')">
+        <span class="nav-icon">👥</span> User Management
+      </button>
+      <button class="nav-item" data-page="plants" onclick="navigateTo('plants')">
+        <span class="nav-icon">🏭</span> Plant Configuration
+      </button>
+      <button class="nav-item" data-page="logs" onclick="navigateTo('logs')">
+        <span class="nav-icon">📜</span> System Logs
+      </button>
+      <button class="nav-item" data-page="settings" onclick="navigateTo('settings')">
+        <span class="nav-icon">⚙️</span> Settings
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">AD</div>
+        <div>
+          <div style="font-size:13px; font-weight:600;">admin</div>
+          <div style="font-size:11px; color:var(--text-muted);">Super Admin</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="showLogoutConfirm()">
+        ↪ Log out
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================== MAIN CONTENT ===================== -->
+  <div class="main">
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <div class="top-bar-date">
+          <div style="font-weight:600;" id="currentDate">Nov 04, 2026</div>
+          <div id="currentTime">05:45:00 PM</div>
+        </div>
+        <div class="top-bar-page" id="topBarTitle">Global Overview</div>
+      </div>
+      <button class="plant-selector" id="plantSelector">🏭 All Plants ▾</button>
+      <div class="status-indicator">
+        <div class="status-dot"></div>
+        Last updated <span id="lastUpdated">07:16:05 IST</span>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ==================== PAGE 1: GLOBAL OVERVIEW ==================== -->
+      <div class="page-section active" id="page-global">
+        <div class="page-header">
+          <div>
+            <h2>Global Dashboard</h2>
+            <p>Enterprise-level overview across all facilities.</p>
+          </div>
+          <button class="btn-primary" onclick="openModal('addPlantModal')">+ Add New Plant</button>
+        </div>
+
+        <!-- KPI Row -->
+        <div class="grid-4">
+          <div class="kpi-card">
+            <div class="kpi-icon">🏭</div>
+            <div class="kpi-title">Total Active Plants</div>
+            <div class="kpi-value">4 / 5</div>
+            <div class="kpi-sub">● 4 Online &nbsp; ○ 1 Offline</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon">⚡</div>
+            <div class="kpi-title">Total Power Consumed</div>
+            <div class="kpi-value">4,820 kWh</div>
+            <div class="kpi-sub" style="color: var(--primary-green);">↑ +12% vs yesterday</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon">🚨</div>
+            <div class="kpi-title">Active Alerts</div>
+            <div class="kpi-value" style="color: var(--red-alert);">3</div>
+            <div class="kpi-sub">2 Critical &nbsp; 1 Warning</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon">⚙️</div>
+            <div class="kpi-title">Total Machines</div>
+            <div class="kpi-value">18</div>
+            <div class="kpi-sub">14 Running &nbsp; 4 Off</div>
+          </div>
+        </div>
+
+        <!-- Plant Cards Grid -->
+        <h3 style="font-size:16px; margin-bottom:16px;">Plant Facilities</h3>
+        <div class="grid-2">
+          <div class="plant-card" onclick="navigateTo('plants')">
+            <div class="plant-card-header">
+              <div>
+                <div class="plant-card-title">Plant 1 - Main Facility</div>
+                <div class="plant-card-location">📍 North Sector &bull; Est. Jan 2024</div>
+              </div>
+              <span class="badge badge-online">● ONLINE</span>
+            </div>
+            <div class="plant-card-stats">
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Active Machines</span>
+                <span class="plant-stat-value">4 / 5</span>
+              </div>
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Power Load</span>
+                <span class="plant-stat-value">100 kWh</span>
+              </div>
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Avg Power Factor</span>
+                <span class="plant-stat-value">0.93</span>
+              </div>
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Active Alerts</span>
+                <span class="plant-stat-value" style="color: var(--primary-green);">None</span>
+              </div>
+            </div>
+            <div class="plant-card-footer">
+              <span class="view-link">View Plant Dashboard →</span>
+            </div>
+          </div>
+
+          <div class="plant-card" onclick="navigateTo('plants')">
+            <div class="plant-card-header">
+              <div>
+                <div class="plant-card-title">Plant 2 - Processing Unit</div>
+                <div class="plant-card-location">📍 South Sector &bull; Est. Mar 2024</div>
+              </div>
+              <span class="badge badge-warning">⚠ WARNING</span>
+            </div>
+            <div class="plant-card-stats">
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Active Machines</span>
+                <span class="plant-stat-value">3 / 5</span>
+              </div>
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Power Load</span>
+                <span class="plant-stat-value">85 kWh</span>
+              </div>
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Avg Power Factor</span>
+                <span class="plant-stat-value">0.88</span>
+              </div>
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Active Alerts</span>
+                <span class="plant-stat-value" style="color: var(--yellow-alert);">1 Warning</span>
+              </div>
+            </div>
+            <div class="plant-card-footer">
+              <span class="view-link">View Plant Dashboard →</span>
+            </div>
+          </div>
+
+          <div class="plant-card">
+            <div class="plant-card-header">
+              <div>
+                <div class="plant-card-title">Plant 3 - Export Mill</div>
+                <div class="plant-card-location">📍 East Sector &bull; Est. Jun 2024</div>
+              </div>
+              <span class="badge badge-offline">○ OFFLINE</span>
+            </div>
+            <div class="plant-card-stats">
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Active Machines</span>
+                <span class="plant-stat-value">0 / 4</span>
+              </div>
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Power Load</span>
+                <span class="plant-stat-value">0 kWh</span>
+              </div>
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Avg Power Factor</span>
+                <span class="plant-stat-value" style="color:var(--text-muted);">N/A</span>
+              </div>
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Active Alerts</span>
+                <span class="plant-stat-value" style="color: var(--primary-green);">None</span>
+              </div>
+            </div>
+            <div class="plant-card-footer">
+              <span class="view-link">View Plant Dashboard →</span>
+            </div>
+          </div>
+
+          <div class="plant-card">
+            <div class="plant-card-header">
+              <div>
+                <div class="plant-card-title">Plant 4 - Warehouse & Dryer</div>
+                <div class="plant-card-location">📍 West Sector &bull; Est. Sep 2024</div>
+              </div>
+              <span class="badge badge-online">● ONLINE</span>
+            </div>
+            <div class="plant-card-stats">
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Active Machines</span>
+                <span class="plant-stat-value">2 / 2</span>
+              </div>
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Power Load</span>
+                <span class="plant-stat-value">62 kWh</span>
+              </div>
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Avg Power Factor</span>
+                <span class="plant-stat-value">0.91</span>
+              </div>
+              <div class="plant-stat-item">
+                <span class="plant-stat-label">Active Alerts</span>
+                <span class="plant-stat-value" style="color: var(--primary-green);">None</span>
+              </div>
+            </div>
+            <div class="plant-card-footer">
+              <span class="view-link">View Plant Dashboard →</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Alerts -->
+        <h3 style="font-size:16px; margin-bottom:16px; margin-top:8px;">Recent Alerts Across Plants</h3>
+        <div class="alert-item critical">
+          <div class="alert-left">
+            <div class="alert-icon critical-icon">🔴</div>
+            <div>
+              <div class="alert-title">Whitener 2 - Load Factor</div>
+              <div class="alert-meta">Plant 2 &bull; Today 10:00 AM</div>
+            </div>
+          </div>
+          <div class="alert-reading">
+            <div class="alert-reading-label">Reading</div>
+            <div class="alert-reading-value" style="color:var(--red-alert);">20%</div>
+          </div>
+        </div>
+        <div class="alert-item warning">
+          <div class="alert-left">
+            <div class="alert-icon warning-icon">🟡</div>
+            <div>
+              <div class="alert-title">Sheller 1 - Load Factor</div>
+              <div class="alert-meta">Plant 1 &bull; Yesterday 10:00 PM</div>
+            </div>
+          </div>
+          <div class="alert-reading">
+            <div class="alert-reading-label">Reading</div>
+            <div class="alert-reading-value" style="color:var(--yellow-alert);">30%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PAGE 2: USER MANAGEMENT ==================== -->
+      <div class="page-section" id="page-users">
+        <div class="page-header">
+          <div>
+            <h2>User Management</h2>
+            <p>Manage user permissions, assigned plants, and system roles.</p>
+          </div>
+          <button class="btn-primary" onclick="openModal('addUserModal')">+ Add New User</button>
+        </div>
+
+        <!-- KPIs -->
+        <div class="grid-3">
+          <div class="kpi-card">
+            <div class="kpi-icon">👥</div>
+            <div class="kpi-title">Total Users</div>
+            <div class="kpi-value" id="totalUsersCount">6</div>
+            <div class="kpi-sub">Across all plants</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon">🟢</div>
+            <div class="kpi-title">Active Users</div>
+            <div class="kpi-value">5</div>
+            <div class="kpi-sub">Currently active</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon">📱</div>
+            <div class="kpi-title">Alert Recipients</div>
+            <div class="kpi-value">4</div>
+            <div class="kpi-sub">Verified phone numbers</div>
+          </div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="🔍  Search by name or email..." id="userSearch" oninput="filterUsers()">
+          <select class="filter-select" id="roleFilter" onchange="filterUsers()">
+            <option value="">All Roles</option>
+            <option value="Super Admin">Super Admin</option>
+            <option value="Plant Manager">Plant Manager</option>
+            <option value="Operator">Operator</option>
+            <option value="Viewer">Viewer</option>
+          </select>
+          <select class="filter-select" id="plantFilter" onchange="filterUsers()">
+            <option value="">All Plants</option>
+            <option value="All Plants">All Plants</option>
+            <option value="Plant 1">Plant 1</option>
+            <option value="Plant 2">Plant 2</option>
+            <option value="Plant 3">Plant 3</option>
+          </select>
+        </div>
+
+        <!-- Users Table -->
+        <div class="card" style="padding:0; overflow:hidden;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Assigned Plant</th>
+                <th>Phone Number</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+          <div class="table-footer">
+            <span id="tableInfo">Showing 1 - 6 of 6 users</span>
+            <div class="pagination">
+              <button>‹</button>
+              <button class="active-page">1</button>
+              <button>2</button>
+              <button>›</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PAGE 3: PLANT CONFIGURATION ==================== -->
+      <div class="page-section" id="page-plants">
+        <div class="page-header">
+          <div>
+            <h2>Plant Configuration</h2>
+            <p>Configure physical plants, machines, and sensor IDs.</p>
+          </div>
+          <button class="btn-primary" onclick="openModal('addPlantModal')">+ Create New Plant</button>
+        </div>
+
+        <!-- Plant 1 Config -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 style="font-size:16px;">🏭 Plant 1 - Main Facility</h3>
+              <p style="font-size:12px; color:var(--text-muted);">Location: North Sector &bull; Added: Jan 2024 &bull; 5 Machines</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-outline" onclick="openModal('editPlantModal')">⚙️ Edit Plant</button>
+              <button class="btn-danger-outline" onclick="showDeleteConfirm('Plant 1')">Delete</button>
+            </div>
+          </div>
+
+          <div class="machine-config-item">
+            <div class="machine-info">
+              <div class="machine-icon-box">🔧</div>
+              <div>
+                <div class="machine-name">Sheller 1</div>
+                <div class="machine-sensor">Sensor: SLEC-MFM-384 &bull; Type: Sheller</div>
+              </div>
+            </div>
+            <div class="machine-meta">
+              <div class="machine-meta-item">
+                <div class="machine-meta-label">Status</div>
+                <div class="machine-meta-value"><span class="badge badge-active">● ON</span></div>
+              </div>
+              <div class="machine-meta-item">
+                <div class="machine-meta-label">Threshold</div>
+                <div class="machine-meta-value">Default (60-69)</div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn-outline" onclick="openModal('editMachineModal')">Edit</button>
+                <button class="btn-danger-outline" onclick="showDeleteConfirm('Sheller 1')">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="machine-config-item">
+            <div class="machine-info">
+              <div class="machine-icon-box">🔧</div>
+              <div>
+                <div class="machine-name">Whitener 1</div>
+                <div class="machine-sensor">Sensor: SLEC-MFM-385 &bull; Type: Whitener</div>
+              </div>
+            </div>
+            <div class="machine-meta">
+              <div class="machine-meta-item">
+                <div class="machine-meta-label">Status</div>
+                <div class="machine-meta-value"><span class="badge badge-active">● ON</span></div>
+              </div>
+              <div class="machine-meta-item">
+                <div class="machine-meta-label">Threshold</div>
+                <div class="machine-meta-value">Default (60-69)</div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn-outline" onclick="openModal('editMachineModal')">Edit</button>
+                <button class="btn-danger-outline" onclick="showDeleteConfirm('Whitener 1')">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="machine-config-item">
+            <div class="machine-info">
+              <div class="machine-icon-box">🔧</div>
+              <div>
+                <div class="machine-name">Whitener 2</div>
+                <div class="machine-sensor">Sensor: SLEC-MFM-386 &bull; Type: Whitener</div>
+              </div>
+            </div>
+            <div class="machine-meta">
+              <div class="machine-meta-item">
+                <div class="machine-meta-label">Status</div>
+                <div class="machine-meta-value"><span class="badge badge-active">● ON</span></div>
+              </div>
+              <div class="machine-meta-item">
+                <div class="machine-meta-label">Threshold</div>
+                <div class="machine-meta-value">Custom (50-60)</div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn-outline" onclick="openModal('editMachineModal')">Edit</button>
+                <button class="btn-danger-outline" onclick="showDeleteConfirm('Whitener 2')">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="machine-config-item">
+            <div class="machine-info">
+              <div class="machine-icon-box">🔧</div>
+              <div>
+                <div class="machine-name">Polisher</div>
+                <div class="machine-sensor">Sensor: SLEC-MFM-387 &bull; Type: Polisher</div>
+              </div>
+            </div>
+            <div class="machine-meta">
+              <div class="machine-meta-item">
+                <div class="machine-meta-label">Status</div>
+                <div class="machine-meta-value"><span class="badge badge-inactive">○ OFF</span></div>
+              </div>
+              <div class="machine-meta-item">
+                <div class="machine-meta-label">Threshold</div>
+                <div class="machine-meta-value">Default (60-69)</div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn-outline" onclick="openModal('editMachineModal')">Edit</button>
+                <button class="btn-danger-outline" onclick="showDeleteConfirm('Polisher')">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <button class="btn-ghost" onclick="openModal('addMachineModal')">+ Add Machine to Plant 1</button>
+          </div>
+        </div>
+
+        <!-- Plant 2 Config -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 style="font-size:16px;">🏭 Plant 2 - Processing Unit</h3>
+              <p style="font-size:12px; color:var(--text-muted);">Location: South Sector &bull; Added: Mar 2024 &bull; 3 Machines</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-outline" onclick="openModal('editPlantModal')">⚙️ Edit Plant</button>
+              <button class="btn-danger-outline" onclick="showDeleteConfirm('Plant 2')">Delete</button>
+            </div>
+          </div>
+
+          <div class="machine-config-item">
+            <div class="machine-info">
+              <div class="machine-icon-box">🔧</div>
+              <div>
+                <div class="machine-name">Destoner</div>
+                <div class="machine-sensor">Sensor: SLEC-MFM-401 &bull; Type: Destoner</div>
+              </div>
+            </div>
+            <div class="machine-meta">
+              <div class="machine-meta-item">
+                <div class="machine-meta-label">Status</div>
+                <div class="machine-meta-value"><span class="badge badge-active">● ON</span></div>
+              </div>
+              <div class="machine-meta-item">
+                <div class="machine-meta-label">Threshold</div>
+                <div class="machine-meta-value">Default (60-69)</div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn-outline" onclick="openModal('editMachineModal')">Edit</button>
+                <button class="btn-danger-outline" onclick="showDeleteConfirm('Destoner')">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <button class="btn-ghost" onclick="openModal('addMachineModal')">+ Add Machine to Plant 2</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PAGE 4: SYSTEM LOGS ==================== -->
+      <div class="page-section" id="page-logs">
+        <div class="page-header">
+          <div>
+            <h2>System Logs</h2>
+            <p>Audit trail of all actions performed in the system.</p>
+          </div>
+          <button class="btn-outline" onclick="showToast('Logs exported successfully!', 'success')">📥 Export Logs</button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchLogTab(this, 'all')">All Logs</button>
+          <button class="tab-btn" onclick="switchLogTab(this, 'user')">User Actions</button>
+          <button class="tab-btn" onclick="switchLogTab(this, 'system')">System Events</button>
+          <button class="tab-btn" onclick="switchLogTab(this, 'alerts')">Alert History</button>
+        </div>
+
+        <!-- Search -->
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="🔍  Search logs...">
+          <select class="filter-select">
+            <option>All Users</option>
+            <option>admin</option>
+            <option>Amit Sharma</option>
+            <option>Suresh Patel</option>
+          </select>
+          <select class="filter-select">
+            <option>Last 24 Hours</option>
+            <option>Last 7 Days</option>
+            <option>Last 30 Days</option>
+            <option>Custom Range</option>
+          </select>
+        </div>
+
+        <div class="card">
+          <div class="log-item">
+            <div class="log-dot"></div>
+            <div class="log-content">
+              <div class="log-action">admin added new user <strong>Vikram Singh</strong></div>
+              <div class="log-details">Role: Viewer &bull; Assigned to Plant 1, Plant 3</div>
+            </div>
+            <div class="log-time">Today, 05:30 PM</div>
+          </div>
+          <div class="log-item">
+            <div class="log-dot" style="background:var(--yellow-alert);"></div>
+            <div class="log-content">
+              <div class="log-action">System generated <strong>Warning Alert</strong> for Sheller 1</div>
+              <div class="log-details">Load Factor dropped to 30% &bull; Plant 1</div>
+            </div>
+            <div class="log-time">Today, 04:15 PM</div>
+          </div>
+          <div class="log-item">
+            <div class="log-dot" style="background:var(--red-alert);"></div>
+            <div class="log-content">
+              <div class="log-action">System generated <strong>Critical Alert</strong> for Whitener 2</div>
+              <div class="log-details">Load Factor dropped to 20% &bull; Plant 2</div>
+            </div>
+            <div class="log-time">Today, 10:00 AM</div>
+          </div>
+          <div class="log-item">
+            <div class="log-dot"></div>
+            <div class="log-content">
+              <div class="log-action">Amit Sharma updated <strong>threshold settings</strong></div>
+              <div class="log-details">Whitener 2: Changed from Default (60-69) to Custom (50-60)</div>
+            </div>
+            <div class="log-time">Yesterday, 03:45 PM</div>
+          </div>
+          <div class="log-item">
+            <div class="log-dot"></div>
+            <div class="log-content">
+              <div class="log-action">admin added alert phone number <strong>+91 90000 00002</strong></div>
+              <div class="log-details">Label: Maintenance &bull; Assigned to Plant 1</div>
+            </div>
+            <div class="log-time">Yesterday, 02:00 PM</div>
+          </div>
+          <div class="log-item">
+            <div class="log-dot"></div>
+            <div class="log-content">
+              <div class="log-action">Suresh Patel <strong>downloaded report</strong> for Plant 2</div>
+              <div class="log-details">Report type: Last 24 Hours &bull; Machine: All</div>
+            </div>
+            <div class="log-time">Yesterday, 11:30 AM</div>
+          </div>
+          <div class="log-item">
+            <div class="log-dot"></div>
+            <div class="log-content">
+              <div class="log-action">admin <strong>changed password</strong></div>
+              <div class="log-details">Password updated successfully</div>
+            </div>
+            <div class="log-time">Nov 02, 09:00 AM</div>
+          </div>
+          <div class="log-item">
+            <div class="log-dot" style="background:var(--blue-info);"></div>
+            <div class="log-content">
+              <div class="log-action">System <strong>firmware update</strong> completed</div>
+              <div class="log-details">SLEC-MFM-384 (Sheller 1) updated to v2.1.4</div>
+            </div>
+            <div class="log-time">Nov 01, 06:00 AM</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PAGE 5: SETTINGS ==================== -->
+      <div class="page-section" id="page-settings">
+        <div class="page-header">
+          <div>
+            <h2>Settings</h2>
+            <p>Your account and who gets alert messages.</p>
+          </div>
+        </div>
+
+        <!-- Change Password -->
+        <div class="card">
+          <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+            <div style="width:56px; height:56px; background:var(--light-green); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px;">🔒</div>
+            <div>
+              <h3 style="font-size:18px;">Change password</h3>
+              <p style="font-size:12px; color:var(--text-muted);">Use at least 8 characters. You stay signed in on this device.</p>
+            </div>
+          </div>
+          <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:16px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Current password</label>
+              <input type="password" class="form-input" value="password123">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">New password</label>
+              <input type="password" class="form-input" value="newpass456" id="newPass">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Confirm new password</label>
+              <input type="password" class="form-input" value="newp" id="confirmPass" oninput="checkPasswordMatch()">
+              <span style="font-size:11px; color:var(--red-alert); display:none;" id="passwordMismatch">Passwords do not match</span>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="showToast('Password updated successfully!', 'success')">Update password</button>
+        </div>
+
+        <!-- Alert Phone Numbers -->
+        <div class="card">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+            <div style="display:flex; align-items:center; gap:16px;">
+              <div style="width:56px; height:56px; background:var(--light-green); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px;">📱</div>
+              <div>
+                <h3 style="font-size:18px;">Alert phone numbers</h3>
+                <p style="font-size:12px; color:var(--text-muted);">These numbers receive alert messages.</p>
+              </div>
+            </div>
+            <span class="badge badge-inactive" style="font-size:11px;">🔒 Admins only</span>
+          </div>
+
+          <div id="phoneList">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border-color);">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span>📞</span>
+                <div>
+                  <div style="font-weight:600; font-size:14px;">+91 90000 00001</div>
+                  <div style="font-size:11px; color:var(--text-muted);">Primary contact</div>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn-outline">Edit</button>
+                <button class="btn-danger-outline">Remove</button>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border-color);">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span>📞</span>
+                <div>
+                  <div style="font-weight:600; font-size:14px;">+91 90000 00002</div>
+                  <div style="font-size:11px; color:var(--text-muted);">Maintenance</div>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn-outline">Edit</button>
+                <button class="btn-danger-outline">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:12px; margin-top:16px; align-items:center;">
+            <span style="color:var(--text-muted);">+91</span>
+            <input type="text" class="form-input" placeholder="Enter 10-digit number" style="flex:1;" id="newPhoneInput">
+            <button class="btn-primary" onclick="addPhoneNumber()">+ Add number</button>
+          </div>
+        </div>
+
+        <!-- Threshold Settings -->
+        <div class="card">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:16px;">
+              <div style="width:56px; height:56px; background:var(--light-green); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px;">📊</div>
+              <div>
+                <h3 style="font-size:18px;">Threshold Settings</h3>
+                <p style="font-size:12px; color:var(--text-muted);">Set value ranges for Power Factor alerts.</p>
+              </div>
+            </div>
+            <div style="display:flex; gap:16px; align-items:center;">
+              <div style="background:var(--red-light); padding:10px 20px; border-radius:var(--radius-sm); text-align:center;">
+                <div style="font-size:11px; color:var(--red-alert); font-weight:600;">⚠ Critical</div>
+                <div style="font-size:16px; font-weight:700;">0 – 60</div>
+              </div>
+              <div style="background:var(--yellow-light); padding:10px 20px; border-radius:var(--radius-sm); text-align:center;">
+                <div style="font-size:11px; color:var(--yellow-alert); font-weight:600;">⚠ Warning</div>
+                <div style="font-size:16px; font-weight:700;">60 – 69</div>
+              </div>
+              <button class="btn-outline" onclick="openModal('thresholdModal')">✏️ Edit</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logout -->
+        <div class="card">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:16px;">
+              <div style="width:56px; height:56px; background:var(--light-green); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px;">🚪</div>
+              <div>
+                <h3 style="font-size:18px;">Log out</h3>
+                <p style="font-size:12px; color:var(--text-muted);">End your session on this device. You will be asked to confirm.</p>
+              </div>
+            </div>
+            <button class="btn-outline" onclick="showLogoutConfirm()">Log out</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PAGE 6: DASHBOARD (Placeholder) ==================== -->
+      <div class="page-section" id="page-dashboard">
+        <div class="page-header">
+          <div>
+            <h2>Dashboard</h2>
+            <p>Today at a glance for the selected plant.</p>
+          </div>
+        </div>
+
+        <div class="card" style="padding:40px; text-align:center; background:var(--light-green);">
+          <div style="font-size:48px; margin-bottom:16px;">📊</div>
+          <h3 style="margin-bottom:8px;">Select a Plant to View Dashboard</h3>
+          <p style="color:var(--text-muted);">Use the plant selector in the top bar or go to Global Overview to see all plants.</p>
+          <button class="btn-primary" style="margin-top:16px;" onclick="navigateTo('global')">Go to Global Overview</button>
+        </div>
+      </div>
+
+      <!-- ==================== PAGE 7: PROCESS ANALYSIS (Placeholder) ==================== -->
+      <div class="page-section" id="page-process">
+        <div class="page-header">
+          <div>
+            <h2>Process Analysis</h2>
+            <p>Detailed machine-level analytics and performance reports.</p>
+          </div>
+        </div>
+
+        <div class="card" style="padding:40px; text-align:center; background:var(--light-green);">
+          <div style="font-size:48px; margin-bottom:16px;">📈</div>
+          <h3 style="margin-bottom:8px;">Select a Machine for Analysis</h3>
+          <p style="color:var(--text-muted);">Choose a plant and machine from the sidebar to view process analysis, load factor trends, and operating performance.</p>
+          <button class="btn-primary" style="margin-top:16px;" onclick="navigateTo('plants')">View Plant Configuration</button>
+        </div>
+      </div>
+
+      <!-- ==================== PAGE 8: ALERTS (Placeholder) ==================== -->
+      <div class="page-section" id="page-alerts">
+        <div class="page-header">
+          <div>
+            <h2>Alerts & Thresholds</h2>
+            <p>Monitor all active and historical alerts across plants.</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-primary" style="background: var(--primary-green);">Alerts</button>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="search-bar">
+          <select class="filter-select">
+            <option>All Plants</option>
+            <option>Plant 1</option>
+            <option>Plant 2</option>
+          </select>
+          <select class="filter-select">
+            <option>All Machines</option>
+            <option>Sheller 1</option>
+            <option>Whitener 2</option>
+          </select>
+          <select class="filter-select">
+            <option>All Severities</option>
+            <option>Critical</option>
+            <option>Warning</option>
+          </select>
+          <select class="filter-select">
+            <option>Active</option>
+            <option>Resolved</option>
+            <option>All</option>
+          </select>
+        </div>
+
+        <div class="alert-item critical">
+          <div class="alert-left">
+            <div class="alert-icon critical-icon">🔴</div>
+            <div>
+              <div class="alert-title">Whitener 2 - Load Factor</div>
+              <div class="alert-meta">Plant 2 &bull; Today 10:00 AM</div>
+            </div>
+          </div>
+          <div class="alert-reading">
+            <div class="alert-reading-label">Reading</div>
+            <div class="alert-reading-value" style="color:var(--red-alert);">20%</div>
+          </div>
+        </div>
+        <div class="alert-item warning">
+          <div class="alert-left">
+            <div class="alert-icon warning-icon">🟡</div>
+            <div>
+              <div class="alert-title">Sheller 1 - Load Factor</div>
+              <div class="alert-meta">Plant 1 &bull; Yesterday 10:00 PM</div>
+            </div>
+          </div>
+          <div class="alert-reading">
+            <div class="alert-reading-label">Reading</div>
+            <div class="alert-reading-value" style="color:var(--yellow-alert);">30%</div>
+          </div>
+        </div>
+        <div class="alert-item critical">
+          <div class="alert-left">
+            <div class="alert-icon critical-icon">🔴</div>
+            <div>
+              <div class="alert-title">Polisher - Power Factor</div>
+              <div class="alert-meta">Plant 1 &bull; Today 08:30 AM</div>
+            </div>
+          </div>
+          <div class="alert-reading">
+            <div class="alert-reading-label">Reading</div>
+            <div class="alert-reading-value" style="color:var(--red-alert);">0.45</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODALS ===================== -->
+
+  <!-- Add User Modal -->
+  <div class="modal-overlay" id="addUserModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Add New User</h3>
+        <button class="modal-close" onclick="closeModal('addUserModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-input" placeholder="Enter first name" id="newUserFname">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-input" placeholder="Enter last name" id="newUserLname">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" placeholder="user@ricemill.com" id="newUserEmail">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Role</label>
+            <select class="form-select" id="newUserRole">
+              <option>Select a role</option>
+              <option>Super Admin</option>
+              <option>Plant Manager</option>
+              <option>Operator</option>
+              <option>Viewer</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Assigned Plant</label>
+            <select class="form-select" id="newUserPlant">
+              <option>Select plant</option>
+              <option>All Plants</option>
+              <option>Plant 1</option>
+              <option>Plant 2</option>
+              <option>Plant 3</option>
+              <option>Plant 4</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span style="color:var(--text-muted); font-size:13px;">+91</span>
+            <input type="text" class="form-input" placeholder="Enter 10-digit number" id="newUserPhone">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Temporary Password</label>
+          <input type="password" class="form-input" placeholder="Min 8 characters" id="newUserPass">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('addUserModal')">Cancel</button>
+        <button class="btn-primary" onclick="addUser()">Create User</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Plant Modal -->
+  <div class="modal-overlay" id="addPlantModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Create New Plant</h3>
+        <button class="modal-close" onclick="closeModal('addPlantModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Plant Name</label>
+          <input type="text" class="form-input" placeholder="e.g., Plant 5 - North Mill">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Location / Sector</label>
+            <input type="text" class="form-input" placeholder="e.g., North Sector">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Plant Manager</label>
+            <select class="form-select">
+              <option>Select manager</option>
+              <option>Rajesh Kumar</option>
+              <option>Amit Sharma</option>
+              <option>Suresh Patel</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description (Optional)</label>
+          <input type="text" class="form-input" placeholder="Brief description of this plant">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('addPlantModal')">Cancel</button>
+        <button class="btn-primary" onclick="closeModal('addPlantModal'); showToast('Plant created successfully!', 'success');">Create Plant</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Plant Modal -->
+  <div class="modal-overlay" id="editPlantModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Edit Plant</h3>
+        <button class="modal-close" onclick="closeModal('editPlantModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Plant Name</label>
+          <input type="text" class="form-input" value="Plant 1 - Main Facility">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Location / Sector</label>
+            <input type="text" class="form-input" value="North Sector">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Plant Manager</label>
+            <select class="form-select">
+              <option selected>Amit Sharma</option>
+              <option>Rajesh Kumar</option>
+              <option>Suresh Patel</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('editPlantModal')">Cancel</button>
+        <button class="btn-primary" onclick="closeModal('editPlantModal'); showToast('Plant updated successfully!', 'success');">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Machine Modal -->
+  <div class="modal-overlay" id="addMachineModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Add Machine</h3>
+        <button class="modal-close" onclick="closeModal('addMachineModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Machine Name</label>
+          <input type="text" class="form-input" placeholder="e.g., Sheller 2">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Machine Type</label>
+            <select class="form-select">
+              <option>Select type</option>
+              <option>Sheller</option>
+              <option>Whitener</option>
+              <option>Polisher</option>
+              <option>Destoner</option>
+              <option>Dryer</option>
+              <option>Sorter</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sensor / Meter ID</label>
+            <input type="text" class="form-input" placeholder="e.g., SLEC-MFM-388">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Threshold Profile</label>
+            <select class="form-select">
+              <option>Default (Critical: 0-60, Warning: 60-69)</option>
+              <option>Custom</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Motor Rating (HP)</label>
+            <input type="text" class="form-input" placeholder="e.g., 15">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('addMachineModal')">Cancel</button>
+        <button class="btn-primary" onclick="closeModal('addMachineModal'); showToast('Machine added successfully!', 'success');">Add Machine</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Machine Modal -->
+  <div class="modal-overlay" id="editMachineModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Edit Machine</h3>
+        <button class="modal-close" onclick="closeModal('editMachineModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Machine Name</label>
+          <input type="text" class="form-input" value="Sheller 1">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Machine Type</label>
+            <select class="form-select">
+              <option selected>Sheller</option>
+              <option>Whitener</option>
+              <option>Polisher</option>
+              <option>Destoner</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sensor / Meter ID</label>
+            <input type="text" class="form-input" value="SLEC-MFM-384">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Threshold Profile</label>
+            <select class="form-select">
+              <option selected>Default (Critical: 0-60, Warning: 60-69)</option>
+              <option>Custom</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Motor Rating (HP)</label>
+            <input type="text" class="form-input" value="15">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('editMachineModal')">Cancel</button>
+        <button class="btn-primary" onclick="closeModal('editMachineModal'); showToast('Machine updated successfully!', 'success');">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Threshold Edit Modal -->
+  <div class="modal-overlay" id="thresholdModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Edit Threshold Settings</h3>
+        <button class="modal-close" onclick="closeModal('thresholdModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Define value ranges for Power Factor alerts. Values outside these ranges will trigger notifications.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" style="color:var(--red-alert);">⚠ Critical Range (Min)</label>
+            <input type="number" class="form-input" value="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="color:var(--red-alert);">⚠ Critical Range (Max)</label>
+            <input type="number" class="form-input" value="60">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" style="color:var(--yellow-alert);">⚠ Warning Range (Min)</label>
+            <input type="number" class="form-input" value="60">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="color:var(--yellow-alert);">⚠ Warning Range (Max)</label>
+            <input type="number" class="form-input" value="69">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('thresholdModal')">Cancel</button>
+        <button class="btn-primary" onclick="closeModal('thresholdModal'); showToast('Thresholds updated successfully!', 'success');">Save Thresholds</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <div class="modal-overlay" id="confirmDeleteModal">
+    <div class="modal" style="width:420px;">
+      <div class="modal-body">
+        <div class="confirm-dialog">
+          <div class="confirm-icon">🗑️</div>
+          <div class="confirm-title" id="confirmDeleteTitle">Delete Item?</div>
+          <div class="confirm-message" id="confirmDeleteMsg">This action cannot be undone. All data associated with this item will be permanently removed.</div>
+          <div class="confirm-actions">
+            <button class="btn-cancel" onclick="closeModal('confirmDeleteModal')">Cancel</button>
+            <button class="btn-danger" onclick="closeModal('confirmDeleteModal'); showToast('Item deleted successfully.', 'success');">Yes, Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout Confirm Modal -->
+  <div class="modal-overlay" id="logoutConfirmModal">
+    <div class="modal" style="width:420px;">
+      <div class="modal-body">
+        <div class="confirm-dialog">
+          <div class="confirm-icon">🚪</div>
+          <div class="confirm-title">Log out?</div>
+          <div class="confirm-message">You are about to end your session. You will need to enter your credentials to log back in.</div>
+          <div class="confirm-actions">
+            <button class="btn-cancel" onclick="closeModal('logoutConfirmModal')">Stay signed in</button>
+            <button class="btn-danger" onclick="closeModal('logoutConfirmModal'); showToast('Logged out successfully.', 'success');">Yes, Log out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+
+  <!-- ===================== JAVASCRIPT ===================== -->
+  <script>
+    // ==================== USER DATA ====================
+    let users = [
+      { id: 1, fname: 'Rajesh', lname: 'Kumar', email: 'rajesh@ricemill.com', role: 'Super Admin', plant: 'All Plants', phone: '+91 90000 00001', status: 'Active' },
+      { id: 2, fname: 'Amit', lname: 'Sharma', email: 'amit@ricemill.com', role: 'Plant Manager', plant: 'Plant 1', phone: '+91 90000 00002', status: 'Active' },
+      { id: 3, fname: 'Suresh', lname: 'Patel', email: 'suresh@ricemill.com', role: 'Operator', plant: 'Plant 2', phone: '+91 90000 00003', status: 'Active' },
+      { id: 4, fname: 'Vikram', lname: 'Singh', email: 'vikram@ricemill.com', role: 'Viewer', plant: 'Plant 1, Plant 3', phone: '+91 90000 00004', status: 'Inactive' },
+      { id: 5, fname: 'Priya', lname: 'Devi', email: 'priya@ricemill.com', role: 'Operator', plant: 'Plant 1', phone: '+91 90000 00005', status: 'Active' },
+      { id: 6, fname: 'Mohan', lname: 'Reddy', email: 'mohan@ricemill.com', role: 'Plant Manager', plant: 'Plant 3', phone: '+91 90000 00006', status: 'Active' }
+    ];
+
+    let nextUserId = 7;
+
+    // ==================== PAGE TITLES ====================
+    const pageTitles = {
+      global: 'Global Overview',
+      users: 'User Management',
+      plants: 'Plant Configuration',
+      logs: 'System Logs',
+      settings: 'Settings',
+      dashboard: 'Dashboard',
+      process: 'Process Analysis',
+      alerts: 'Alerts & Thresholds'
+    };
+
+    // ==================== NAVIGATION ====================
+    function navigateTo(page) {
+      // Hide all pages
+      document.querySelectorAll('.page-section').forEach(section => {
+        section.classList.remove('active');
+      });
+
+      // Show target page
+      const targetPage = document.getElementById('page-' + page);
+      if (targetPage) {
+        targetPage.classList.add('active');
+      }
+
+      // Update sidebar active
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      const activeNav = document.querySelector(`.nav-item[data-page="${page}"]`);
+      if (activeNav) {
+        activeNav.classList.add('active');
+      }
+
+      // Update top bar title
+      document.getElementById('topBarTitle').textContent = pageTitles[page] || page;
+
+      // Render users table if navigating to users page
+      if (page === 'users') {
+        renderUsersTable();
+      }
+    }
+
+    // ==================== RENDER USERS TABLE ====================
+    function renderUsersTable(filteredUsers = null) {
+      const tbody = document.getElementById('usersTableBody');
+      const data = filteredUsers || users;
+
+      tbody.innerHTML = '';
+
+      if (data.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">
+              No users found matching your search criteria.
+            </td>
+          </tr>
+        `;
+        document.getElementById('tableInfo').textContent = 'Showing 0 results';
+        return;
+      }
+
+      data.forEach(user => {
+        const initials = user.fname[0] + user.lname[0];
+        const statusClass = user.status === 'Active' ? 'badge-active' : 'badge-inactive';
+        const statusDot = user.status === 'Active' ? '●' : '○';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>
+            <div class="user-cell">
+              <div class="user-cell-avatar">${initials}</div>
+              <div>
+                <div class="user-cell-name">${user.fname} ${user.lname}</div>
+                <div class="user-cell-email">${user.email}</div>
+              </div>
+            </div>
+          </td>
+          <td>${user.role}</td>
+          <td>${user.plant}</td>
+          <td>${user.phone}</td>
+          <td><span class="badge ${statusClass}">${statusDot} ${user.status}</span></td>
+          <td>
+            <div class="actions-cell">
+              <button class="btn-outline" onclick="editUser(${user.id})">Edit</button>
+              <button class="btn-danger-outline" onclick="deleteUser(${user.id})">Remove</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById('tableInfo').textContent = `Showing 1 - ${data.length} of ${data.length} users`;
+      document.getElementById('totalUsersCount').textContent = users.length;
+    }
+
+    // ==================== FILTER USERS ====================
+    function filterUsers() {
+      const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+      const roleFilter = document.getElementById('roleFilter').value;
+      const plantFilter = document.getElementById('plantFilter').value;
+
+      let filtered = users.filter(user => {
+        const matchesSearch = !searchTerm ||
+          (user.fname + ' ' + user.lname).toLowerCase().includes(searchTerm) ||
+          user.email.toLowerCase().includes(searchTerm);
+
+        const matchesRole = !roleFilter || user.role === roleFilter;
+        const matchesPlant = !plantFilter || user.plant.includes(plantFilter);
+
+        return matchesSearch && matchesRole && matchesPlant;
+      });
+
+      renderUsersTable(filtered);
+    }
+
+    // ==================== ADD USER ====================
+    function addUser() {
+      const fname = document.getElementById('newUserFname').value.trim();
+      const lname = document.getElementById('newUserLname').value.trim();
+      const email = document.getElementById('newUserEmail').value.trim();
+      const role = document.getElementById('newUserRole').value;
+      const plant = document.getElementById('newUserPlant').value;
+      const phone = document.getElementById('newUserPhone').value.trim();
+
+      if (!fname || !lname || !email) {
+        showToast('Please fill in all required fields.', 'error');
+        return;
+      }
+
+      const newUser = {
+        id: nextUserId++,
+        fname: fname,
+        lname: lname,
+        email: email,
+        role: role === 'Select a role' ? 'Viewer' : role,
+        plant: plant === 'Select plant' ? 'Plant 1' : plant,
+        phone: phone ? `+91 ${phone}` : 'Not provided',
+        status: 'Active'
+      };
+
+      users.push(newUser);
+      closeModal('addUserModal');
+      renderUsersTable();
+      showToast(`User ${fname} ${lname} created successfully!`, 'success');
+
+      // Clear form
+      document.getElementById('newUserFname').value = '';
+      document.getElementById('newUserLname').value = '';
+      document.getElementById('newUserEmail').value = '';
+      document.getElementById('newUserPhone').value = '';
+      document.getElementById('newUserPass').value = '';
+    }
+
+    // ==================== EDIT USER ====================
+    function editUser(id) {
+      const user = users.find(u => u.id === id);
+      if (!user) return;
+
+      // Re-use the Add User modal with pre-filled data
+      document.getElementById('newUserFname').value = user.fname;
+      document.getElementById('newUserLname').value = user.lname;
+      document.getElementById('newUserEmail').value = user.email;
+
+      // Update modal title
+      const modalTitle = document.querySelector('#addUserModal .modal-header h3');
+      modalTitle.textContent = 'Edit User';
+
+      // Update button
+      const saveBtn = document.querySelector('#addUserModal .modal-footer .btn-primary');
+      saveBtn.textContent = 'Save Changes';
+      saveBtn.onclick = function() {
+        user.fname = document.getElementById('newUserFname').value.trim();
+        user.lname = document.getElementById('newUserLname').value.trim();
+        user.email = document.getElementById('newUserEmail').value.trim();
+        user.role = document.getElementById('newUserRole').value;
+        user.plant = document.getElementById('newUserPlant').value;
+
+        closeModal('addUserModal');
+        renderUsersTable();
+        showToast(`User ${user.fname} ${user.lname} updated!`, 'success');
+
+        // Reset modal
+        modalTitle.textContent = 'Add New User';
+        saveBtn.textContent = 'Create User';
+        saveBtn.onclick = addUser;
+      };
+
+      openModal('addUserModal');
+    }
+
+    // ==================== DELETE USER ====================
+    function deleteUser(id) {
+      const user = users.find(u => u.id === id);
+      if (!user) return;
+
+      document.getElementById('confirmDeleteTitle').textContent = `Remove ${user.fname} ${user.lname}?`;
+      document.getElementById('confirmDeleteMsg').textContent = `This will revoke all access for ${user.email}. This action cannot be undone.`;
+
+      const deleteBtn = document.querySelector('#confirmDeleteModal .btn-danger');
+      deleteBtn.onclick = function() {
+        users = users.filter(u => u.id !== id);
+        closeModal('confirmDeleteModal');
+        renderUsersTable();
+        showToast(`User ${user.fname} ${user.lname} removed.`, 'success');
+      };
+
+      openModal('confirmDeleteModal');
+    }
+
+    // ==================== MODALS ====================
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('show');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.show').forEach(modal => {
+          modal.classList.remove('show');
+        });
+        document.body.style.overflow = '';
+      }
+    });
+
+    // ==================== TOAST NOTIFICATIONS ====================
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `${type === 'success' ? '✅' : '❌'} ${message}`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    // ==================== DELETE CONFIRM ====================
+    function showDeleteConfirm(itemName) {
+      document.getElementById('confirmDeleteTitle').textContent = `Delete ${itemName}?`;
+      document.getElementById('confirmDeleteMsg').textContent = `This action cannot be undone. All data associated with "${itemName}" will be permanently removed.`;
+
+      const deleteBtn = document.querySelector('#confirmDeleteModal .btn-danger');
+      deleteBtn.onclick = function() {
+        closeModal('confirmDeleteModal');
+        showToast(`${itemName} deleted successfully.`, 'success');
+      };
+
+      openModal('confirmDeleteModal');
+    }
+
+    // ==================== LOGOUT CONFIRM ====================
+    function showLogoutConfirm() {
+      openModal('logoutConfirmModal');
+    }
+
+    // ==================== LOG TABS ====================
+    function switchLogTab(btn, tab) {
+      document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      showToast(`Showing ${btn.textContent} logs`, 'success');
+    }
+
+    // ==================== PASSWORD MATCH CHECK ====================
+    function checkPasswordMatch() {
+      const newPass = document.getElementById('newPass').value;
+      const confirmPass = document.getElementById('confirmPass').value;
+      const mismatchEl = document.getElementById('passwordMismatch');
+
+      if (confirmPass && newPass !== confirmPass) {
+        mismatchEl.style.display = 'block';
+      } else {
+        mismatchEl.style.display = 'none';
+      }
+    }
+
+    // ==================== ADD PHONE NUMBER ====================
+    function addPhoneNumber() {
+      const input = document.getElementById('newPhoneInput');
+      const phone = input.value.trim();
+
+      if (!phone || phone.length !== 10) {
+        showToast('Please enter a valid 10-digit number.', 'error');
+        return;
+      }
+
+      const phoneList = document.getElementById('phoneList');
+      const newEntry = document.createElement('div');
+      newEntry.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border-color);';
+      newEntry.innerHTML = `
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span>📞</span>
+          <div>
+            <div style="font-weight:600; font-size:14px;">+91 ${phone.substring(0,5)} ${phone.substring(5)}</div>
+            <div style="font-size:11px; color:var(--text-muted);">New contact</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-outline">Edit</button>
+          <button class="btn-danger-outline" onclick="this.parentElement.parentElement.remove(); showToast('Phone number removed.', 'success');">Remove</button>
+        </div>
+      `;
+      phoneList.appendChild(newEntry);
+      input.value = '';
+      showToast('Phone number added successfully!', 'success');
+    }
+
+    // ==================== CLOCK UPDATE ====================
+    function updateClock() {
+      const now = new Date();
+      const options = { year: 'numeric', month: 'short', day: '2-digit' };
+      document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+
+      const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+      document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
+
+      const istOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' };
+      document.getElementById('lastUpdated').textContent = now.toLocaleTimeString('en-US', istOptions) + ' IST';
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ==================== PLANT SELECTOR ====================
+    const plantSelector = document.getElementById('plantSelector');
+    let currentPlantIndex = 0;
+    const plantOptions = ['🏭 All Plants ▾', '🏭 Plant 1 ▾', '🏭 Plant 2 ▾', '🏭 Plant 3 ▾', '🏭 Plant 4 ▾'];
+
+    plantSelector.addEventListener('click', function() {
+      currentPlantIndex = (currentPlantIndex + 1) % plantOptions.length;
+      this.textContent = plantOptions[currentPlantIndex];
+      showToast(`Switched to ${plantOptions[currentPlantIndex].replace(' ▾', '').replace('🏭 ', '')}`, 'success');
+    });
+
+    // ==================== INITIAL RENDER ====================
+    renderUsersTable();
+  </script>
+
+</body>
+</html>
